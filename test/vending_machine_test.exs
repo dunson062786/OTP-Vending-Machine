@@ -66,6 +66,19 @@ defmodule VendingMachineTest do
       assert products == [VendingMachine.Product.createCola()]
       assert change == [VendingMachine.Coin.createQuarter(), VendingMachine.Coin.createQuarter()]
     end
+
+    test "If Vending Machine can not make change and $0.75 has been inserted and candy has been selected then Vending Machine will return $0.75 in change", %{
+      vending_machine: vm
+    } do
+      empty_coin_storage = %VendingMachine.CoinStorage{}
+      VendingMachine.set_vending_machine(vm, %VendingMachine.Machine{VendingMachine.get_vending_machine(vm) | bank: empty_coin_storage})
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      {products, change} = VendingMachine.select_product(vm, :candy)
+      assert equal?(products, [])
+      assert equal?(change, [VendingMachine.Coin.createQuarter(), VendingMachine.Coin.createQuarter(), VendingMachine.Coin.createQuarter()])
+    end
   end
 
   describe "VendingMachine.get_vending_machine/1" do
@@ -124,5 +137,9 @@ defmodule VendingMachineTest do
       assert VendingMachine.Machine.equal?(VendingMachine.get_vending_machine(vm), %VendingMachine.Machine{}) == false
       assert VendingMachine.Machine.equal?(VendingMachine.get_vending_machine(vm), machine) == true
     end
+  end
+
+  defp equal?(list1, list2) do
+    Enum.sort(list1) == Enum.sort(list2)
   end
 end
