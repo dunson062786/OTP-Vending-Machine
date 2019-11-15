@@ -36,8 +36,35 @@ defmodule VendingMachineTest do
     test "If user selects product and not enough money has been insert then Vending Machine returns no products and no change", %{
       vending_machine: vm
     } do
-      val = VendingMachine.select_product(vm, :cola)
-      assert val == {[], []}
+      {products, change} = VendingMachine.select_product(vm, :cola)
+      assert products == []
+      assert change == []
+    end
+
+    test "If user select cola and $1.00 has been inserted then Vending Machine will return a cola and no change", %{
+      vending_machine: vm
+    } do
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      {products, change} = VendingMachine.select_product(vm, :cola)
+      assert products == [VendingMachine.Product.createCola()]
+      assert change == []
+    end
+
+    test "If user selects cola and $1.50 has been inserted then Vending Machine will return a cola and $0.50 in change", %{
+      vending_machine: vm
+    } do
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      {products, change} = VendingMachine.select_product(vm, :cola)
+      assert products == [VendingMachine.Product.createCola()]
+      assert change == [VendingMachine.Coin.createQuarter(), VendingMachine.Coin.createQuarter()]
     end
   end
 
