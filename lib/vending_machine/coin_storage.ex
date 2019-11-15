@@ -1,4 +1,4 @@
-defmodule CoinStorage do
+defmodule VendingMachine.CoinStorage do
   @coin_to_values %{
     quarter: 25,
     dime: 10,
@@ -9,8 +9,10 @@ defmodule CoinStorage do
             tally: %{quarter: 0, dime: 0, nickel: 0},
             total: 0
 
-  def add_coins(coin_storage, [hd | tl] = coins) do
-    add_coins(add_coin(coin_storage, hd), tl)
+  def add_coins(coin_storage, [hd | tl]) do
+    coin_storage
+    |> add_coin(hd)
+    |> add_coins(tl)
   end
 
   def add_coins(coin_storage, []) do
@@ -24,7 +26,7 @@ defmodule CoinStorage do
   end
 
   def remove_coins(coin_storage) do
-    {coin_storage.wallet, %CoinStorage{}}
+    {coin_storage.wallet, %VendingMachine.CoinStorage{}}
   end
 
   def remove_coin(coin_storage, coin) do
@@ -47,9 +49,9 @@ defmodule CoinStorage do
   """
   def remove_highest_non_quarter_coin(coin_storage) do
     if coin_storage.tally.dime > 0 do
-      get_and_remove_coin(coin_storage, Coin.createDime())
+      get_and_remove_coin(coin_storage, VendingMachine.Coin.createDime())
     else
-      get_and_remove_coin(coin_storage, Coin.createNickel())
+      get_and_remove_coin(coin_storage, VendingMachine.Coin.createNickel())
     end
   end
 
@@ -62,8 +64,8 @@ defmodule CoinStorage do
   def get_highest_non_quarter_coin(coin_storage) do
     case coin_storage.tally do
       %{quarter: _, dime: 0, nickel: 0} -> nil
-      %{quarter: _, dime: 0, nickel: _} -> Coin.createNickel()
-      %{quarter: _, dime: _, nickel: _} -> Coin.createDime()
+      %{quarter: _, dime: 0, nickel: _} -> VendingMachine.Coin.createNickel()
+      %{quarter: _, dime: _, nickel: _} -> VendingMachine.Coin.createDime()
     end
   end
 end
