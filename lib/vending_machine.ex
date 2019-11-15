@@ -1,15 +1,13 @@
 defmodule VendingMachine do
-  @server VendingMachine.Server
-
-  def start_link(current_vending_machine) do
-    GenServer.start_link(@server, current_vending_machine, name: @server)
+  def insert_coin(server, coin) do
+    GenServer.cast(server, {:insert_coin, coin})
   end
 
-  def insert_coin(coin) do
-    GenServer.cast(@server, {:insert_coin, coin})
+  def select_product(server, product) do
+    GenServer.cast(server, {:select_product, product})
   end
 
-  def select_product(product) do
-    GenServer.cast(@server, {:select_product, product})
+  def get_display(server) do
+    GenServer.call(server, {:lookup, :display})
   end
 end

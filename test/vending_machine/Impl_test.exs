@@ -179,6 +179,22 @@ defmodule VendingMachine.ImplTest do
 
       assert vm.display == "SOLD OUT"
     end
+
+    test "if chips selected and sold out then vending machine displays SOLD OUT", %{
+      vending_machine: vm
+    } do
+      vm = VendingMachine.Impl.select_product(vm, :chips)
+
+      assert vm.display == "SOLD OUT"
+    end
+
+    test "if candy selected and sold out then vending machine displays SOLD OUT", %{
+      vending_machine: vm
+    } do
+      vm = VendingMachine.Impl.select_product(vm, :candy)
+
+      assert vm.display == "SOLD OUT"
+    end
   end
 
   describe "VendingMachine.Impl.select_product/2 vending functionality of full Vending Machine" do
@@ -267,6 +283,65 @@ defmodule VendingMachine.ImplTest do
       vm = VendingMachine.Impl.select_product(vm, :candy)
 
       assert vm.inventory == [%Product{name: :cola}, %Product{name: :chips}]
+    end
+  end
+
+  describe "VendingMachine.Impl.remove_product_from_bin/2" do
+    setup do
+      %{
+        vending_machine: %VendingMachine.Machine{
+          bin: [
+            %Product{name: :cola}
+          ]
+        }
+      }
+    end
+
+    test "After removing the product bin is empty and display says insert coin", %{
+      vending_machine: vm
+    } do
+      vm = VendingMachine.Impl.remove_product_from_bin(vm, %Product{name: :cola})
+      assert vm.bin == []
+      assert vm.display == "INSERT COIN"
+    end
+  end
+
+  describe "VendingMachine.Impl.select_product/2 returns correct change" do
+    setup do
+      %{
+        vending_machine: %VendingMachine.Machine{
+          inventory: [
+            %Product{name: :cola},
+            %Product{name: :chips},
+            %Product{name: :candy}
+          ],
+          bank: [
+            @quarter,
+            @quarter,
+            @quarter,
+            @quarter,
+            @dime,
+            @dime,
+            @dime,
+            @dime,
+            @nickel,
+            @nickel,
+            @nickel,
+            @nickel
+          ]
+        }
+      }
+    end
+
+    test "If 75c is deposited and candy is selected then 10c is returned", %{vending_machine: vm} do
+      vm =
+        VendingMachine.Impl.insert_coin(vm, @quarter)
+        |> VendingMachine.Impl.insert_coin(@quarter)
+        |> VendingMachine.Impl.insert_coin(@quarter)
+
+      vm = VendingMachine.Impl.select_product(vm, :candy)
+
+      assert vm.coin_return == [@dime]
     end
   end
 end

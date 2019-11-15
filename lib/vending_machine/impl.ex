@@ -26,6 +26,20 @@ defmodule VendingMachine.Impl do
     end
   end
 
+  def check_display(vending_machine) do
+    if vending_machine.display == nil do
+      change_display(vending_machine)
+    else
+      {vending_machine, vending_machine.display}
+    end
+  end
+
+  def remove_product_from_bin(vending_machine, product) do
+    vending_machine = put_in(vending_machine.bin, vending_machine.bin -- [product])
+
+    put_in(vending_machine.display, "INSERT COIN")
+  end
+
   def deselect_selected(vending_machine, product) do
     %VendingMachine.Machine{
       vending_machine
@@ -68,7 +82,9 @@ defmodule VendingMachine.Impl do
         |> get_selected()
         |> get_price()
 
-      if get_value_of_coins(vending_machine.staging) < price do
+      value_of_coins = get_value_of_coins(vending_machine.staging)
+
+      if value_of_coins < price do
         put_in(vending_machine.display, "PRICE #{display_price}")
       else
         product = %Product{name: get_selected(vending_machine)}
@@ -101,5 +117,26 @@ defmodule VendingMachine.Impl do
       :chips -> {0.5, "$0.50"}
       :candy -> {0.65, "$0.65"}
     end
+  end
+
+  def change_display(vending_machine) do
+    if can_make_change(vending_machine) do
+      {put_in(vending_machine.display, "INSERT COIN"), vending_machine.display || "INSERT COIN"}
+    else
+      {put_in(vending_machine.display, "EXACT CHANGE ONLY"),
+       vending_machine.display || "EXACT CHANGE ONLY"}
+    end
+  end
+
+  @doc """
+  If the bank return any multiple of 5c up to 20c then there is enough money to make change
+  since you could always return coins from staging until you get within that range.
+  """
+  def can_make_change(vending_machine) do
+    number_of_nickels = vending_machine.bank.tally.nickel
+    number_of_dimes = vending_machine.bank.tally.dime
+
+    number_of_nickels > 3 || (number_of_nickels > 1 && number_of_dimes > 0) ||
+      (number_of_nickels == 1 && number_of_dimes > 1)
   end
 end
