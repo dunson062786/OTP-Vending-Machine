@@ -91,6 +91,7 @@ defmodule VendingMachine.MachineTest do
           VendingMachine.Product.createCola()
         ]
       }
+
       vending_machine_two = %VendingMachine.Machine{
         inventory: [VendingMachine.Product.createCandy()]
       }
@@ -105,6 +106,7 @@ defmodule VendingMachine.MachineTest do
           VendingMachine.Product.createCandy()
         ]
       }
+
       vending_machine_two = %VendingMachine.Machine{
         inventory: [VendingMachine.Product.createCandy(), VendingMachine.Product.createCola()]
       }
@@ -159,6 +161,7 @@ defmodule VendingMachine.MachineTest do
         VendingMachine.Product.createCola()
       ]
     }
+
     vending_machine_two = %VendingMachine.Machine{
       bin: [VendingMachine.Product.createCandy()]
     }
@@ -173,6 +176,7 @@ defmodule VendingMachine.MachineTest do
         VendingMachine.Product.createCandy()
       ]
     }
+
     vending_machine_two = %VendingMachine.Machine{
       bin: [VendingMachine.Product.createCandy(), VendingMachine.Product.createCola()]
     }
@@ -184,6 +188,7 @@ defmodule VendingMachine.MachineTest do
     vending_machine_one = %VendingMachine.Machine{
       grid: %{cola: false, chips: false, candy: false}
     }
+
     vending_machine_two = %VendingMachine.Machine{
       grid: %{cola: true, chips: false, candy: false}
     }
@@ -195,6 +200,7 @@ defmodule VendingMachine.MachineTest do
     vending_machine_one = %VendingMachine.Machine{
       grid: %{cola: false, chips: false, candy: false}
     }
+
     vending_machine_two = %VendingMachine.Machine{
       grid: %{cola: false, chips: false, candy: false}
     }
@@ -206,6 +212,7 @@ defmodule VendingMachine.MachineTest do
     vending_machine_one = %VendingMachine.Machine{
       ledger: %{cola: 100, chips: 50, candy: 65}
     }
+
     vending_machine_two = %VendingMachine.Machine{
       ledger: %{cola: 200, chips: 100, candy: 130}
     }
@@ -217,6 +224,7 @@ defmodule VendingMachine.MachineTest do
     vending_machine_one = %VendingMachine.Machine{
       ledger: %{cola: 200, chips: 100, candy: 130}
     }
+
     vending_machine_two = %VendingMachine.Machine{
       ledger: %{cola: 200, chips: 100, candy: 130}
     }

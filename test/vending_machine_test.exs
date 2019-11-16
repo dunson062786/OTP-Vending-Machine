@@ -7,6 +7,26 @@ defmodule VendingMachineTest do
     %{vending_machine: vending_machine}
   end
 
+  describe "VendingMachine.insert_coin/2" do
+    test "insert nickel adds nickel to staging", %{
+      vending_machine: vm
+    } do
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createNickel())
+
+      assert equal?(VendingMachine.get_vending_machine(vm).staging.wallet, [
+               VendingMachine.Coin.createNickel()
+             ])
+    end
+
+    test "insert penny does not add penny to staging", %{
+      vending_machine: vm
+    } do
+      VendingMachine.insert_coin(vm, %VendingMachine.Coin{weight: 2.5, name: :penny})
+
+      assert equal?(VendingMachine.get_vending_machine(vm).staging.wallet, [])
+    end
+  end
+
   describe "VendingMachine.get_display/1" do
     test "displays INSERT COIN when vending machine can make change", %{
       vending_machine: vm
@@ -33,17 +53,19 @@ defmodule VendingMachineTest do
   end
 
   describe "VendingMachine.select_product/2" do
-    test "If user selects product and not enough money has been insert then Vending Machine returns no products and no change", %{
-      vending_machine: vm
-    } do
+    test "If user selects product and not enough money has been insert then Vending Machine returns no products and no change",
+         %{
+           vending_machine: vm
+         } do
       {products, change} = VendingMachine.select_product(vm, :cola)
       assert products == []
       assert change == []
     end
 
-    test "If user select cola and $1.00 has been inserted then Vending Machine will return a cola and no change", %{
-      vending_machine: vm
-    } do
+    test "If user select cola and $1.00 has been inserted then Vending Machine will return a cola and no change",
+         %{
+           vending_machine: vm
+         } do
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
@@ -53,9 +75,10 @@ defmodule VendingMachineTest do
       assert change == []
     end
 
-    test "If user selects cola and $1.50 has been inserted then Vending Machine will return a cola and $0.50 in change", %{
-      vending_machine: vm
-    } do
+    test "If user selects cola and $1.50 has been inserted then Vending Machine will return a cola and $0.50 in change",
+         %{
+           vending_machine: vm
+         } do
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
@@ -67,17 +90,28 @@ defmodule VendingMachineTest do
       assert change == [VendingMachine.Coin.createQuarter(), VendingMachine.Coin.createQuarter()]
     end
 
-    test "If Vending Machine can not make change and $0.75 has been inserted and candy has been selected then Vending Machine will return $0.75 in change", %{
-      vending_machine: vm
-    } do
+    test "If Vending Machine can not make change and $0.75 has been inserted and candy has been selected then Vending Machine will return $0.75 in change",
+         %{
+           vending_machine: vm
+         } do
       empty_coin_storage = %VendingMachine.CoinStorage{}
-      VendingMachine.set_vending_machine(vm, %VendingMachine.Machine{VendingMachine.get_vending_machine(vm) | bank: empty_coin_storage})
+
+      VendingMachine.set_vending_machine(vm, %VendingMachine.Machine{
+        VendingMachine.get_vending_machine(vm)
+        | bank: empty_coin_storage
+      })
+
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
       VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
       {products, change} = VendingMachine.select_product(vm, :candy)
       assert equal?(products, [])
-      assert equal?(change, [VendingMachine.Coin.createQuarter(), VendingMachine.Coin.createQuarter(), VendingMachine.Coin.createQuarter()])
+
+      assert equal?(change, [
+               VendingMachine.Coin.createQuarter(),
+               VendingMachine.Coin.createQuarter(),
+               VendingMachine.Coin.createQuarter()
+             ])
     end
   end
 
@@ -88,12 +122,12 @@ defmodule VendingMachineTest do
       assert VendingMachine.Machine.equal?(
                VendingMachine.get_vending_machine(vm),
                %VendingMachine.Machine{
-                inventory: [
-                  VendingMachine.Product.createCola(),
-                  VendingMachine.Product.createChips(),
-                  VendingMachine.Product.createCandy()
-                ]
-              }
+                 inventory: [
+                   VendingMachine.Product.createCola(),
+                   VendingMachine.Product.createChips(),
+                   VendingMachine.Product.createCandy()
+                 ]
+               }
              ) == true
     end
 
@@ -113,8 +147,14 @@ defmodule VendingMachineTest do
       }
 
       VendingMachine.set_vending_machine(vm, machine)
-      assert VendingMachine.Machine.equal?(VendingMachine.get_vending_machine(vm), %VendingMachine.Machine{}) == false
-      assert VendingMachine.Machine.equal?(VendingMachine.get_vending_machine(vm), machine) == true
+
+      assert VendingMachine.Machine.equal?(
+               VendingMachine.get_vending_machine(vm),
+               %VendingMachine.Machine{}
+             ) == false
+
+      assert VendingMachine.Machine.equal?(VendingMachine.get_vending_machine(vm), machine) ==
+               true
     end
   end
 
@@ -133,9 +173,39 @@ defmodule VendingMachineTest do
           total: 55
         }
       }
+
       VendingMachine.set_vending_machine(vm, machine)
-      assert VendingMachine.Machine.equal?(VendingMachine.get_vending_machine(vm), %VendingMachine.Machine{}) == false
-      assert VendingMachine.Machine.equal?(VendingMachine.get_vending_machine(vm), machine) == true
+
+      assert VendingMachine.Machine.equal?(
+               VendingMachine.get_vending_machine(vm),
+               %VendingMachine.Machine{}
+             ) == false
+
+      assert VendingMachine.Machine.equal?(VendingMachine.get_vending_machine(vm), machine) ==
+               true
+    end
+  end
+
+  describe "VendingMachine.return_coins/1" do
+    test "returns an empty array if no coins have been inserted", %{vending_machine: vm} do
+      assert equal?(VendingMachine.return_coins(vm), [])
+    end
+
+    test "returns a quarter if a quarter has been inserted", %{vending_machine: vm} do
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      assert equal?(VendingMachine.return_coins(vm), [VendingMachine.Coin.createQuarter()])
+    end
+
+    test "returns all coins inserted", %{vending_machine: vm} do
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createQuarter())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createDime())
+      VendingMachine.insert_coin(vm, VendingMachine.Coin.createNickel())
+
+      assert equal?(VendingMachine.return_coins(vm), [
+               VendingMachine.Coin.createDime(),
+               VendingMachine.Coin.createNickel(),
+               VendingMachine.Coin.createQuarter()
+             ])
     end
   end
 
