@@ -35,7 +35,7 @@ defmodule VendingMachine.Server do
     {:reply, {new_vending_machine.bin, new_vending_machine.coin_return}, new_vending_machine}
   end
 
-  def handle_call(:display, _from, current_vending_machine) do
+  def handle_call(:get_display, _from, current_vending_machine) do
     {new_vending_machine, display} = VendingMachine.Impl.check_display(current_vending_machine)
     {:reply, display, new_vending_machine}
   end

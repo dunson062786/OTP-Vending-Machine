@@ -8,7 +8,7 @@ defmodule VendingMachine do
   end
 
   def get_display(server) do
-    GenServer.call(server, :display)
+    GenServer.call(server, :get_display)
   end
 
   def return_coins(server) do
